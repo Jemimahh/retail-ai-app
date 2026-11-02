@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Product Description Generator</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, Segoe UI, sans-serif; background: #f4f5f7; margin: 0; padding: 2rem 1rem; color: #1f2430; }
+    .card { max-width: 640px; margin: 0 auto; background: #fff; padding: 2rem; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,.08); }
+    h1 { margin-top: 0; font-size: 1.6rem; }
+    p.sub { color: #626b7a; margin-top: -.5rem; }
+    label { display: block; font-weight: 600; margin: 1rem 0 .3rem; }
+    input, select { width: 100%; padding: .65rem; border: 1px solid #c9ced8; border-radius: 8px; font-size: 1rem; }
+    .row { display: flex; gap: 1rem; }
+    .row > div { flex: 1; }
+    button { margin-top: 1.5rem; width: 100%; padding: .8rem; background: #3b5bdb; color: #fff; border: 0; border-radius: 8px; font-size: 1rem; cursor: pointer; }
+    button:disabled { background: #8a9ae0; cursor: wait; }
+    .error { background: #fdecea; color: #a12622; padding: .8rem 1rem; border-radius: 8px; margin-top: 1.25rem; }
+    .result { background: #f1f4ff; border-left: 4px solid #3b5bdb; padding: 1rem 1.25rem; border-radius: 8px; margin-top: 1.5rem; line-height: 1.6; white-space: pre-wrap; }
+    .note { font-size: .8rem; color: #7a8190; margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Product Description Generator</h1>
+    <p class="sub">Enter a product and keywords, pick a tone, and let a local LLM write the copy.</p>
+
+    <form method="post" id="form">
+      <label for="product_name">Product name</label>
+      <input id="product_name" name="product_name" required placeholder="e.g. Trail Running Shoes" value="{{ form.product_name }}">
+
+      <label for="keywords">Keywords (comma-separated)</label>
+      <input id="keywords" name="keywords" required placeholder="e.g. lightweight, waterproof, grippy" value="{{ form.keywords }}">
+
+      <div class="row">
+        <div>
+          <label for="tone">Tone / customer segment</label>
+          <select id="tone" name="tone">
+            {% for key, t in tones.items() %}
+            <option value="{{ key }}" {% if form.tone == key %}selected{% endif %}>{{ key|capitalize }} ({{ t.segment }})</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div>
+          <label for="length">Length</label>
+          <select id="length" name="length">
+            {% for key in lengths %}
+            <option value="{{ key }}" {% if form.length == key %}selected{% endif %}>{{ key|capitalize }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <button type="submit" id="btn">Generate description</button>
+    </form>
+
+    {% if error %}
+    <div class="error">{{ error }}</div>
+    {% endif %}
+
+    {% if description %}
+    <h2 style="margin-top:1.5rem;">Generated description</h2>
+    <div class="result">{{ description }}</div>
+    <p class="note">AI-generated draft. Review for accuracy before publishing. Model: {{ model }}</p>
+    {% endif %}
+  </div>
+
+  <script>
+    document.getElementById('form').addEventListener('submit', function () {
+      var b = document.getElementById('btn');
+      b.disabled = true;
+      b.textContent = 'Generating...';
+    });
+  </script>
+</body>
+</html>
