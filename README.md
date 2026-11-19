@@ -21,7 +21,7 @@ A Flask web app that uses a local LLM (via Ollama) to generate product descripti
 2. Create a virtual environment and install dependencies:
    ```
    python -m venv venv
-   source venv/bin/activate      # Windows: venv\Scripts\activate
+   source venv/bin/activate      # Windows: venv/Scripts/activate
    pip install flask requests
    ```
 3. Run the app:
